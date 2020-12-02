@@ -10,10 +10,43 @@ Day2 >> calc1 [
 ]
 
 { #category : #'as yet unclassified' }
-Day2 >> countValids: aString [
-	| pwds lines |
+Day2 >> calc2 [
+	^ self countValids2: self myInput
+]
+
+{ #category : #'as yet unclassified' }
+Day2 >> checkPwd2: aPwdArray [
+	| pwd ch |
+	pwd := aPwdArray fourth.
+	ch := aPwdArray third.
+	^ (ch = (pwd at: aPwdArray first)) xor: (ch = (pwd at: aPwdArray second))
+]
+
+{ #category : #'as yet unclassified' }
+Day2 >> checkPwd: aPwdArray [
+	| cnt |
+	cnt := aPwdArray fourth occurrencesOf: aPwdArray third .
+	^ cnt
+		between: aPwdArray first 
+		and: aPwdArray second 
+]
+
+{ #category : #'as yet unclassified' }
+Day2 >> countValids2: aString [
+	| pwds lines ok |
 	lines := aString lines.
-	pwds := lines collect: [ :each | self parse: each ].^pwds
+	pwds := lines collect: [ :each | self parse: each ].
+	ok := pwds select: [ :each | self checkPwd2: each ].
+	^ ok size
+]
+
+{ #category : #'as yet unclassified' }
+Day2 >> countValids: aString [
+	| pwds lines ok |
+	lines := aString lines.
+	pwds := lines collect: [ :each | self parse: each ].
+	ok := pwds select: [ :each | self checkPwd: each ].
+	^ ok size
 ]
 
 { #category : #'as yet unclassified' }
@@ -1022,7 +1055,12 @@ Day2 >> myInput [
 
 { #category : #parsing }
 Day2 >> parse: aLine [
-	| parts |
-	parts := '[ :-]'asRegex split:  aLine.
-	^ parts
+	| raw tmp |
+	raw := '[ :-]' asRegex split: aLine.
+	tmp := Array
+		with: raw first asInteger
+		with: raw second asInteger
+		with: raw third first
+		with:raw fifth.
+	^ tmp
 ]

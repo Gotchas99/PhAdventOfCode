@@ -1,8 +1,65 @@
 Class {
 	#name : #Day3,
 	#superclass : #Object,
+	#instVars : [
+		'map',
+		'rowsInc',
+		'posInc'
+	],
 	#category : #'CAs-AoC2020-Core'
 }
+
+{ #category : #'as yet unclassified' }
+Day3 >> calc1 [
+self map: self myInput.
+	^ self countInMap
+]
+
+{ #category : #'as yet unclassified' }
+Day3 >> calc2 [
+self map: self myInput.
+	^ self countAllSlopes 
+]
+
+{ #category : #'as yet unclassified' }
+Day3 >> countAllSlopes [
+	| res treeCounts |
+	treeCounts := self slopes collect:[:sl|self countInSlope: sl].
+	res := treeCounts reduce: [ :a :b | a * b ].
+	^ res
+]
+
+{ #category : #'as yet unclassified' }
+Day3 >> countInMap [
+	^self countTopRow: map pos: 1
+]
+
+{ #category : #'as yet unclassified' }
+Day3 >> countInSlope: aSlopePair [
+	self posInc: aSlopePair first.
+	self rowsInc: aSlopePair second.
+	^self countInMap 
+]
+
+{ #category : #'as yet unclassified' }
+Day3 >> countTopRow: aList pos: aPos [
+	| inc |
+	aList ifEmpty: [ ^ 0 ].
+	inc := (self treeAtPos: aPos in: aList first)
+		ifTrue: 1
+		ifFalse: 0.
+	^ inc + (self countTopRow: (self nextRowFrom: aList) pos: aPos + self posInc)
+]
+
+{ #category : #initialization }
+Day3 >> initialize [ 
+posInc:=3.rowsInc :=1
+]
+
+{ #category : #'accessing structure variables' }
+Day3 >> map: aMapString [
+	map:=aMapString lines.
+]
 
 { #category : #'as yet unclassified' }
 Day3 >> myInput [
@@ -329,4 +386,43 @@ Day3 >> myInput [
 .....#..#..#...#...#..#........
 ..#......##...............#.#.#
 .#...###.#....##..........#.#..'
+]
+
+{ #category : #'as yet unclassified' }
+Day3 >> nextRowFrom: aList [
+(aList size < rowsInc )ifTrue:[^#( )].
+	^ aList allButFirst:  rowsInc
+]
+
+{ #category : #'accessing structure variables' }
+Day3 >> posInc [
+	^ posInc
+]
+
+{ #category : #'accessing structure variables' }
+Day3 >> posInc:aNum [
+	posInc:=aNum
+]
+
+{ #category : #'accessing structure variables' }
+Day3 >> rows [
+^map size.
+]
+
+{ #category : #'as yet unclassified' }
+Day3 >> rowsInc:aNum [ 
+rowsInc :=aNum
+]
+
+{ #category : #'as yet unclassified' }
+Day3 >> slopes [
+	^ #((1 1 )(3 1) (5 1) (7 1) (1 2))
+]
+
+{ #category : #'as yet unclassified' }
+Day3 >> treeAtPos: aNum in: aString [
+| pos |
+pos:= aNum\\aString size.
+(pos=0)ifTrue:[pos:=aString size].
+	^ $# = (aString at: pos)
 ]
